@@ -1,0 +1,71 @@
+CREATE TABLE `usuario` (
+  `id_usuario` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) COLLATE utf8_general_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8_general_ci NOT NULL,
+  `telefone` varchar(11) COLLATE utf8_general_ci NOT NULL,
+  `tipo` ENUM('desenvolvedor', 'professor', 'aluno') DEFAULT 'aluno',
+  `senha` varchar(255) COLLATE utf8_general_ci NOT NULL,
+  `status` varchar(11) COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+CREATE TABLE `aula` (
+  `id_aula` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `materia` varchar(255) COLLATE utf8_general_ci NOT NULL,
+  `tipo_aula` varchar(20) COLLATE utf8_general_ci NOT NULL,
+  `descricao` text COLLATE utf8_general_ci NOT NULL,
+  `data_aula` VARCHAR(20) NOT NULL,
+  `horario_inicio` time NOT NULL,
+  `horario_fim` time NOT NULL,
+  `metodo_pagamento` ENUM('pix', 'dinheiro'),
+  `momento_pagamento` ENUM('ao_encerrar', 'final_mes', 'inicio_mes') DEFAULT 'ao_encerrar',
+  `frequencia` varchar(20) COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id_aula`),
+  FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+CREATE TABLE `requisicao` (
+  `id_requisicao` int(11) NOT NULL AUTO_INCREMENT,
+  `id_aula` int(11) NOT NULL,
+  `status` varchar(20) COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id_requisicao`),
+  FOREIGN KEY (`id_aula`) REFERENCES `aula` (`id_aula`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+CREATE TABLE `aulas_fixas` (
+  `id_aulas_fixas` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NULL,
+  `local` VARCHAR(20) NOT NULL,
+  `dia_semana` VARCHAR(20) NOT NULL,
+  `hora_inicio` TIME NOT NULL,
+  `hora_fim` TIME NOT NULL,
+  `origem` VARCHAR(10),
+  PRIMARY KEY (`id_aulas_fixas`),
+  FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+CREATE TABLE `aulas_unicas` (
+  `id_aulas_unicas` int(11) NOT NULL AUTO_INCREMENT,
+  `id_aula` int(11) NULL,
+  `local` VARCHAR(20) NOT NULL,
+  `data` DATE NOT NULL,
+  `hora_inicio` TIME NOT NULL,
+  `hora_fim` TIME NOT NULL,
+  `origem` VARCHAR(10),
+  PRIMARY KEY (`id_aulas_unicas`),
+  FOREIGN KEY (`id_aula`) REFERENCES `aula` (`id_aula`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+CREATE TABLE `dividas` (
+  `id_divida` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `id_aula` int(11) NOT NULL,
+  `valor_devido` DECIMAL(10, 2),
+  `status_pagamento` ENUM('pendente', 'pago') DEFAULT 'pendente',
+  `data_vencimento` DATE,
+  `metodo_pagamento` ENUM('ao_encerrar', 'final_mes', 'inicio_mes') DEFAULT 'ao_encerrar',
+  PRIMARY KEY (`id_divida`),
+  FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),
+  FOREIGN KEY (`id_aula`) REFERENCES `aula` (`id_aula`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
